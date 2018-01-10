@@ -1,0 +1,260 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath} 
+\usepackage{dsfont}
+\usepackage{amsthm,amsfonts,amssymb,epsfig,titling,caption,graphicx,url,array}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+
+\begin{document}
+
+\noindent\Large{Janvier 2017 - Statistique 1}
+\hspace{60mm}
+\Large{ENSAE ParisTech}
+
+\vspace{70mm}
+\begin{center} \textsc{\Huge{Projet de Statistiques \\ Moyenne d'une Loi de Pareto}}\\
+\vspace{5mm}
+\Large{Sujet propos\'e par C. Champagne}
+\end{center}
+\vspace{80mm}
+\begin{flushright}\Large{Cl\'ementine Rosier - Romain Fichou}
+\end{flushright}
+\newpage
+
+On dispose de n observations $(X_{1},...,X_{n})$ iid tir\'ees selon une loi de Pareto, de fonction de r\'epartition $F(x)=1-(\frac{c}{x})^{\theta}$, pour $x>c$.
+
+\subsubsection*{Question 1}
+Soit $u\in \mathclose{[}0;1\mathopen{[}$, on a :
+$$1-(\frac{c}{x})^{\theta}=u <=> x=c(1-u)^{-\frac{1}{\theta}}$$
+Donc la fonction de r\'epartition inverse est donn\'ee par : $G(u)=c(1-u)^{-\frac{1}{\theta}}$, pour $u\in \mathclose{[}0;1\mathopen{[}$.
+
+%%Insérer code R et histogrammes
+
+\subsubsection*{Question 2}
+Cherchons tout d'abord si la loi de Pareto admet une esp\'erance et si oui, sous quelle conditions. 
+\\ Soit $c\in\mathbb{R}$, en notant$f$ la densit\'e de la loi, on a:
+$$f(x)=\theta\frac{c^{\theta}}{x^{\theta+1}} \mathds{1}_{x>c}$$
+
+Ainsi, on calcule:
+
+\begin{align*}
+\mathbb{E}(|x|)&= \int_{-\infty}^{+\infty}|x|\theta\frac{c^{\theta}}{x^{\theta+1}} \mathds{1}_{x>c} dx 
+\\ &= \theta c^{\theta}  \int_{c}^{+\infty} \frac{|x|}{x^{\theta + 1}} dx
+\end{align*}
+
+ Or on sait que pour tout $t\neq0$:
+ \begin{center}
+ 	$\int_{t}^{+\infty}\frac{1}{x^{\theta}}dx$ converge si et seulement si $ \theta>1$.
+ \end{center}
+Et pour tout $c$ et $t$ r\'eels, $\int_{c}^{t}\frac{1}{x^{\theta}}dx$ converge \\
+Donc pour tout $c$ r\'eel, $\mathbb{E}(|x|)<+\infty$ si et seulement si $\theta<1$.\\ 
+Ainsi la loi de Pareto admet une esp\'erance si et seulement $\theta>1$.
+\\ Alors pour tout $c$ r\'eel et pour tout $\theta$ strictement sup\'erieur \`a 1, on peut calculer:\\
+
+\begin{align*}
+\mathbb{E}(x)&= \int_{c}^{+\infty} \theta c^{\theta} \frac{1}{x^{\theta}}dx\\
+			&= \theta c^{\theta}\times [-\frac{1}{1+\theta}x^{1+\theta}]^{+\infty}_{c}\\
+			&= \theta c^{\theta} \frac{-1}{1 - \theta}\times c^{1-\theta} +0\\
+\textnormal{Ainsi, } \mathbb{E}(x)&= \frac{\theta}{\theta -1}c
+\end{align*}
+
+\section*{PARTIE I : Cadre fr\'equentiste}
+\subsection*{A. Maximum de vraisemblance}
+\subsubsection*{Question 1}
+Calculons tout d'abord la vraisemblance. On a, comme les n observations sont ind\'ependantes et identiquement distrbu\'ees:
+$$L_{n}(x_{1},...,x_{n};\theta)= \prod_{i=1}^{n} \frac{\theta c^{\theta}}{x_{i}^{\theta +1}} = \theta^{n}c^{\theta n}\times ( \prod_{i=1}^{n} x_{i})^{-(\theta +1)}$$
+On passe \`a la log-vraisemblance pour faciliter ensuite la maximisation. En effet, la fonction logarithme \'etant croissante, les deux maximisation sont \'equivalentes. On obtient alors:
+$$l_{n}(x_{1};...;x_{n};\theta)= n\ln\theta + n\theta\ln(c)-(\theta+1)\sum_{i=1}^{n}\ln(x_{i})$$
+
+La condition de premier ordre, nous donne alors:
+$$\frac{\partial l_{n}}{\partial \theta}(x_{1};...;x_{n};\theta)=0 $$
+i.e. $$\frac{n}{\theta} + n\ln(c) - \sum_{i=1}^{n}\ln(x_{i})=0$$
+i.e.$$ \frac{n}{\theta}= \sum{i=1}^{n}\ln(x_{i})-n\ln(c)$$
+i.e.$$\theta = \frac{n}{\sum_{i=1}^{n}\ln(\frac{x_{i}}{c})}$$
+\\ De plus la d\'eriv\'ee seconde de la log-vraisemblance sur $\theta$, pour tout $\theta$:
+$$\frac{\partial^{2} l_{n}}{\partial^{2} \theta}(x_{1};...;x_{n};\theta)=\frac{-n}{\theta^{2}} <0 $$
+Donc le point trouv\'e pr\'ec\'edemment est bien un maximum.
+
+Ainsi l'estimateur du maximum de vraisemblance est:
+$$\theta^{emv}=\frac{n}{\sum_{i=1}^{n}\ln(\frac{x_{i}}{c})}$$
+
+\subsubsection*{Question 2}
+Dans le cas, $\theta < 1$, on cherche un estimateur param\`etrique de l'esp\'erance m de la loi de Pareto. On prend $c=1$. On a:
+\begin{align*}
+\hat{m} &= \frac{\theta ^{emv}}{\theta ^{emv}-1}\times 1\\
+		&= \frac{\frac{n}{\sum_{i=1}^{n}\ln(\frac{x_{i}}{c})}}{\frac{n}{\sum_{i=1}^{n}\ln(\frac{x_{i}}{c})} -1}\\
+		&= \frac{n}{n-\sum_{i=1}^{n}\ln(\frac{x_{i}}{c})}
+\end{align*}
+\\ Cherchons maintenant la loi asymptotique de cet estimateur.\\
+On se concentre tout d'abord sur l'estimateur $\theta ^{emv}$. On note $f$ la densit\'e de la loir de Pareto. On a pour tout $x>c$,:
+$$f(x;\theta)=\theta\frac{c^{\theta}}{x^{\theta+1}}$$
+Calculons l'information de Fisher de $\theta$:
+\begin{align*}
+I_{n}(\theta)&= - \mathbb{E}_{\theta}[\frac{\partial^{2} l_{n}}{\partial^{2} \theta}(x_{1};...;x_{n};\theta)]\\
+		&= \mathbb{E}_{\theta}[\frac{n}{\theta^{2}}]\\
+		&= \frac{n}{\theta^{2}}
+\end{align*}
+
+
+On remarque donc que:
+\begin{enumerate}
+	\item Le support de $f(.,\theta)$ est le m\^eme pour tout $\theta$ puisqu'il ne d\' epend que de $c$.
+	\item $\theta_{0} (=3)$ est un point int\'erieur de $\Theta$
+	\item Pour tout $x$, et \`a proximit\'e de $\theta_{0}$, $f$ est trois fois d\'erivale en $\theta$ et vaut $\frac{2}{\theta^{3}}$ que l'on peut majorer par la fonction constante \' egale \`a 2. De plus si on pose $M:x\longmapsto 2$, on a $\mathbb{E}_{\theta_{0}}(M(X))=2<+\infty$
+	\item On a $I_{1}(\theta)= \frac{1}{\theta^{2}}>0$
+\end{enumerate}
+Ainsi, par th\'eor\^eme, on a que la solution de  l'\'equation de vraisemblance $\theta^{emv}$ v\'erifie:
+$$\sqrt{n}(\theta^{emv}-\theta_{0})\stackrel{\mathcal{L}}{\longrightarrow}\mathcal{N}(0,\theta^{2}) \ \  [\mathbb{P}_{\theta_{0}}]$$
+\\ On veut ensuite appliquer la Delta-method pour obtenir la loi asymptotique de l'estimateur de $m$.
+\\Posons $g:x \longmapsto \frac{x}{1-x}$ d\'efini sur $\mathopen{]}1\,;+\infty\mathclose{]}$.
+\\ On a, pour tout $\theta>1$:
+$$g'(\theta)=\frac{1}{(\theta-1)^{2}}\neq0$$
+Et comme, $\hat{m}=g(\theta^{emv})$, on sait que le $\hat{m}$ ainsi défini est un estimateur du maximum de vraisemblance de $m$, et on obtient:
+$$\sqrt{n}(g(\theta^{emv})-g(\theta_{0}))\stackrel{\mathcal{L}}{\longrightarrow}\mathcal{N}(0,g'(\theta)^{2}\theta^{2}) \ \  [\mathbb{P}_{\theta_{0}}]$$
+D'o\`u:
+$$\sqrt{n}(\hat{m}-m)\stackrel{\mathcal{L}}{\longrightarrow}\mathcal{N}(0,\frac{\theta^{2}}{(\theta-1)^{4}}) \ \  [\mathbb{P}_{\theta_{0}}]$$
+
+
+\subsubsection*{Question 3}
+D'apr\`es le r\'esultat de la question pr\'ec\'edente, on a :
+$$\sqrt{n}(\hat{m}-m)\stackrel{\mathcal{L}}{\longrightarrow}\mathcal{N}(0,\frac{\theta^{2}}{(\theta-1)^{4}}) \ \  [\mathbb{P}_{\theta_{0}}]$$
+
+		
+De plus, on sait que $\theta^{emv}\stackrel{p.s.}{\longrightarrow}\theta\ \  [\mathbb{P}_{\theta_{0}}] $ .
+\\Donc, on a: 
+$$\sqrt{\frac{(\theta^{emv}-1)^{4}}{(\theta^{emv})^{2}}} \stackrel{p.s.}{\longrightarrow}  \sqrt{\frac{(\theta-1)^{4}}{(\theta)^{2}}}\ \  [\mathbb{P}_{\theta_{0}}] $$
+
+Or, la convergence presque s\^ure entraine la convergence en probabilit\'e.
+
+On obtient ainsi:
+
+$$\frac{(\theta^{emv}-1)^{2}}{\theta^{emv}} \stackrel{\mathbb{P}}{\longrightarrow}  \frac{(\theta-1)^{2}}{\theta}\ \  [\mathbb{P}_{\theta_{0}}] $$
+
+
+Enfin, la fonction $h:(x,y)\longmapsto xy$ est une fonction continue sur $\mathbb{R}$.
+
+On peut donc appliquer le th\' eor\`eme de Slutsky et obtenir le r\'esultat suivant:
+
+$$\frac{(\theta^{emv}-1)^{2}}{\theta^{emv}}\times s\sqrt{n}(\hat{m}-m)\stackrel{\mathcal{D}}{\longrightarrow}\mathcal{N}(0,1) \ \  [\mathbb{P}_{\theta_{0}}]$$
+
+On peut alors construire un intervalle de confiance asymptotique pour le seuil $\alpha$, en notant $u_{\alpha} $ le quantile $(1-\frac{\alpha}{2})$ d'une loi normale centr\'ee r\'eduite. En effet:
+\begin{align*}
+1-\alpha &= \lim_{n\rightarrow =\infty}\mathbb{P}(-u_{\alpha}\leq\frac{(\theta^{emv}-1)^{2}}{\theta^{emv}}\times\sqrt{n}(\hat{m}-m)\leq u_{\alpha})\\
+		&= \lim_{n\rightarrow =\infty}\mathbb{P}(\hat{m}+\frac{u_{\alpha}\theta^{emv}}{\sqrt{n}(\theta^{emv}-1)^{2}}\geq m \geq \hat{m}-\frac{u_{\alpha}\theta^{emv}}{\sqrt{n}(\theta^{emv}-1)^{2}})
+\end{align*}
+
+
+On obtient ainsi l'intervalle de confiance suivant:
+\begin{align*}
+&[\hat{m}-\frac{u_{\alpha}\theta^{emv}}{\sqrt{n}(\theta^{emv}-1)^{2}}; \hat{m}+\frac{u_{\alpha}\theta^{emv}}{\sqrt{n}(\theta^{emv}-1)^{2}}]
+\\&=[\hat{m}(1-\frac{u_{\alpha}}{\sqrt{n}(\theta^{emv}-1)}); \hat{m}(1+\frac{u_{\alpha}}{\sqrt{n}(\theta^{emv}-1)})]\\
+		&=[\frac{1}{1-\frac{\sum_{i=1}^{n}\ln(\frac{x_{i}}{c})}{n}}(1-\frac{u_{\alpha}}{\sqrt{n}(\frac{n}{\sum_{i=1}^{n}\ln(\frac{x_{i}}{c})}-1)}); \frac{1}{1-\frac{\sum_{i=1}^{n}\ln(\frac{x_{i}}{c})}{n}}(1+\frac{u_{\alpha}}{\sqrt{n}(\frac{n}{\sum_{i=1}^{n}\ln(\frac{x_{i}}{c})}-1)})]		
+\end{align*}
+
+\subsubsection*{Question 4}
+%Faire les calculs avec les données simulées
+%Pour $\alpha = 0,05$, on a $u_{\alpha}=1,96$. On obtient ainsi:
+
+\subsection*{B. M\'ethode des moments}
+\subsubsection*{Question 1}
+Par d\'efinition de m, on sait que :
+\begin{center}
+$\mathbb{E}(X_{1}) = m$
+\end{center}
+Donc un estimateur de la moyenne m par la m\'ethode des moments est naturellement la moyenne empirique :
+\begin{center}
+$\widehat{m_{n}}=\overline{X_{n}}=\frac{1}{n} \sum_{i=1}^{n}X_{i}$
+\end{center}
+
+\subsubsection*{Question 2}
+Dans le cadre de l'estimation par la m\'ethode des moments, on a existence d'une loi asymptotique de l'estimateur si $\mathbb{V}(X_{1}) < + \infty$. Or, comme $X_{1}$ suit une loi de Pareto, cette variance existe si et seulement si $\theta > 2$ et vaut alors :
+\begin{center}
+$\mathbb{V}(X_{1}) = \frac{\theta}{(\theta-1)^{2}(\theta-2)}c^{2}$
+\end{center}
+Sous cette condition d'existence, on a alors : 
+\begin{center}
+$\sqrt{n}(\frac{1}{n}\sum_{i=1}^{n}X_{i} - m) \underset{n\to+\infty}{\overset{\mathcal{L}}{\longrightarrow}} \mathcal{N}(0,\mathbb{V}(X_{1})) \ \  [\mathbb{P}_{\theta}]  $
+\end{center}
+Ou encore en prenant l'expression de la variance avec $c=1$ :
+\begin{center}
+$\sqrt{n}(\frac{1}{n}\sum_{i=1}^{n}X_{i} - m) \underset{n\to+\infty}{\overset{\mathcal{L}}{\longrightarrow}} \mathcal{N}(0,\frac{\theta}{(\theta-1)^{2}(\theta-2)}) \ \  [\mathbb{P}_{\theta}] $
+\end{center}
+
+\subsubsection*{Question 3}
+Gr\^ace a cette loi asymptotique, on peut d\'eduire un intervalle de confiance pour m. On va pour cela utiliser le fait que l'estimateur obtenu par la m\'ethode des moments est fortement convergent : 
+$$ \widehat{m_{n}} \underset{n\to+\infty}{\overset{p.s.}{\longrightarrow}} m \ \ [\mathbb{P}_{\theta}]  $$
+Pour construire l'intervalle de confiance, il nous faut un estimateur fortement convergent de $\theta$ qui est inconnu. En utilisant la question 2 (avec $c=1$), on peut exprimer $\theta$ en fonction de m :
+$$ m = \frac{1\times\theta}{\theta-1} $$
+i.e. $$ m(\theta - 1) = \theta $$
+i.e. $$ (1 - m)\theta = -m $$
+i.e. $$ \theta = \frac{m}{m-c} $$
+Comme la fonction $ x \longmapsto \frac{x}{x-1}$ est continue sur $]1;+\infty[$ ($\theta > 1$ pour que l'esp\'erance existe), $\widehat{\theta_{n}} = \frac{\widehat{m_{n}}}{\widehat{m_{n}}-1}$ est alors un estimateur fortement convergent de $\theta$. \\
+Donc, on a : 
+$$\sqrt{\frac{\widehat{\theta_{n}}}{(\widehat{\theta_{n}}-1)^{2}(\widehat{\theta_{n}}-2)}} \underset{n\to+\infty}{\overset{p.s.}{\longrightarrow}} \sqrt{\frac{\theta}{(\theta-1)^{2}(\theta-2)}} \ \ [\mathbb{P}_{\theta}]  $$
+Or, la convergence presque s\^ure entra\^ine la convergence en probabilit\'e. Donc en développant les calculs, on obtient :
+
+$$\sqrt{\frac{\frac{\widehat{m_{n}}}{\widehat{m_{n}}-1}}{(\frac{\widehat{m_{n}}}{\widehat{m_{n}}-1}-1)^{2}(\frac{\widehat{m_{n}}}{\widehat{m_{n}}-1}-2)}} 
+\underset{n\to+\infty}{\overset{\mathbb{P}}{\longrightarrow}} 
+\sqrt{\frac{\theta}{(\theta-1)^{2}(\theta-2)}} \ \ [\mathbb{P}_{\theta}] $$
+
+i.e. $$ \sqrt{\frac{\widehat{m_{n}}(\widehat{m_{n}}-1)^{2}}{2-\widehat{m_{n}}}}
+\underset{n\to+\infty}{\overset{\mathbb{P}}{\longrightarrow}} 
+\sqrt{\frac{\theta}{(\theta-1)^{2}(\theta-2)}} \ \ [\mathbb{P}_{\theta}] $$
+
+Enfin, la fonction $ (x,y)\longmapsto xy$ est une fonction continue sur $\mathbb{R}$. On peut donc appliquer le th\' eor\`eme de Slutsky et obtenir le r\'esultat suivant:
+
+$$\sqrt{\frac{2-\widehat{m_{n}}}{\widehat{m_{n}}(\widehat{m_{n}}-1)^{2}}} \times \sqrt{n}(\widehat{m_{n}} - m)
+\underset{n\to+\infty}{\overset{\mathcal{L}}{\longrightarrow}} \mathcal{N}(0,1) \ \  [\mathbb{P}_{\theta}] $$
+
+On peut alors construire un intervalle de confiance asymptotique pour le seuil $\alpha$, en notant $u_{\alpha} $ le quantile $(1-\frac{\alpha}{2})$ d'une loi normale centr\'ee r\'eduite. En effet:
+\begin{align*}
+1-\alpha &= \lim_{n\rightarrow +\infty}\mathbb{P}(-u_{\alpha} \leq \sqrt{\frac{2-\widehat{m_{n}}}{\widehat{m_{n}}(\widehat{m_{n}}-1)^{2}}} \times \sqrt{n}(\widehat{m_{n}} - m) \leq u_{\alpha}) \\
+	&= \lim_{n\rightarrow +\infty}\mathbb{P}(\widehat{m_{n}}+u_{\alpha}\times\sqrt{\frac{\widehat{m_{n}}(\widehat{m_{n}}-1)^{2}}{n(2-\widehat{m_{n}})}} \geq  m \geq \widehat{m_{n}}-u_{\alpha}\times\sqrt{\frac{\widehat{m_{n}}(\widehat{m_{n}}-1)^{2}}{n(2-\widehat{m_{n}})}}) 
+\end{align*}
+
+On obtient ainsi l'intervalle de confiance suivant:
+\begin{align*}
+&[\widehat{m_{n}}-u_{\alpha}\times\sqrt{\frac{\widehat{m_{n}}(\widehat{m_{n}}-1)^{2}}{n(2-\widehat{m_{n}})}};\widehat{m_{n}}+u_{\alpha}\times\sqrt{\frac{\widehat{m_{n}}(\widehat{m_{n}}-1)^{2}}{n(2-\widehat{m_{n}})}}]
+\\ &= [\frac{1}{n} \sum_{i=1}^{n}X_{i}  - u_{\alpha}\times \sqrt{\frac{\frac{1}{n} \sum_{i=1}^{n}X_{i}(\frac{1}{n} \sum_{i=1}^{n}X_{i}-1)^{2}}{2n-\sum_{i=1}^{n}X_{i}}} ; \\
+&\frac{1}{n} \sum_{i=1}^{n}X_{i}  + u_{\alpha}\times \sqrt{\frac{\frac{1}{n} \sum_{i=1}^{n}X_{i}(\frac{1}{n} \sum_{i=1}^{n}X_{i}-1)^{2}}{2n-\sum_{i=1}^{n}X_{i}}}]
+\end{align*}
+
+\subsubsection*{Question 4}
+%Faire les calculs avec les données simulées
+%Pour $\alpha = 0,05$, on a $u_{\alpha}=1,96$. On obtient ainsi:
+
+\section*{PARTIE II : Cadre bay\'esien}
+On se place dans le cadre bay\'esien. On suppose une distribution a priori gaussienne pour $m$, d'esp\'erance $\mu$ et de variance $\sigma^{2}$.
+
+\subsubsection*{Question 1}
+
+La loi a priori de $m$ s'\'ecrit sous la forme suivante:
+$$\pi (m) = \frac{1}{\sqrt{2\pi\sigma^{2}}}\exp(-\frac{(m-\mu)^{2}}{2\sigma^{2}})$$
+De plus, la vraisemblance en fonction de $\theta$ s'\'ecrit:
+$$L_{n}(x_{1},...,x_{n};\theta) = \theta^{n}1^{\theta n}\times ( \prod_{i=1}^{n} x_{i})^{-(\theta +1)}$$
+
+Or $\theta=\frac{m}{m-1}$ (cf:question 3).\\
+D'o\`u:
+$$L_{n}(x_{1},...,x_{n};m)= (\frac{m}{m-1})^{n}\times ( \prod_{i=1}^{n} x_{i})^{-(\frac{m}{m-1} +1)}$$
+
+On trouve ainsi:
+$$\pi(m|x)\propto (\frac{m}{m-1})^{n}\times ( \prod_{i=1}^{n} x_{i})^{-(\frac{m}{m-1})}\exp(-\frac{(m-\mu)^{2}}{2\sigma^{2}})$$
+
+%justifier el passage au log cf ply de coraline
+On passe au logarithme:
+$$\ln (\pi (m|x))= n\ln(\frac{m}{m-1})+ \frac{m}{m-1}\times \sum_{i=1}^{n}\ln(x_{i})- \frac{(m-\mu)^2}{2\sigma^2}+ constante$$
+
+\subsubsection*{Question 2}
+%R
+
+\subsubsection*{Question 3}
+
+\subsubsection*{Question 4}
+
+\subsubsection*{Question 5}
+
+On sait que l'estimateur de Bayes associ\'e \`a la perte quadratique est l'\' esperance a posteriori.
+On prend donc la moyenne de l'Èchantillon simul\' e dans la question pr\'ec\'edente.
+
+\end{document}
